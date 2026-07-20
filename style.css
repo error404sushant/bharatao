@@ -1,0 +1,76 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4ecf7 100%);
+  color: #1a1a2e;
+  padding: 24px;
+}
+
+.card {
+  text-align: center;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 48px 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  max-width: 480px;
+  width: 100%;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 2.2rem;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  margin: 0 0 32px;
+  color: #555b6e;
+  font-size: 1.1rem;
+}
+
+.cta {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.cta a {
+  color: #2952e3;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cta a:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(135deg, #14151f 0%, #1e2130 100%);
+    color: #f2f2f7;
+  }
+  .card {
+    background: #1c1e2b;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+  .tagline {
+    color: #b5b9c9;
+  }
+  .cta {
+    color: #dcdde5;
+  }
+  .cta a {
+    color: #7f9bff;
+  }
+}
