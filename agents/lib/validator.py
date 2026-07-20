@@ -12,6 +12,18 @@ BANNED_PHRASES = [
     "number one trick", "this one weird",
 ]
 
+# Leaked-reasoning markers: phrases that only show up when the model's own
+# deliberation/self-correction bleeds into the "final" output instead of
+# staying internal. Seen in practice on a Gyaan draft (visible "wait, actually
+# corrected... revised answer... let's use a different question" mid-article).
+# Structural checks (word count, h2 count) don't catch this -- the article can
+# be the right length and shape while still being unpublishably confused.
+LEAKED_REASONING_PHRASES = [
+    "wait, actually", "let me reconsider", "revised answer", "revised q",
+    "correction:", "to avoid confusion", "let's use a different",
+    "better:", "on second thought", "actually, let's",
+]
+
 # crude but effective heuristic: a bare 4-digit year or a rupee amount not
 # accompanied by a fact_source citation is treated as an unsourced claim.
 DATE_OR_AMOUNT_RE = re.compile(r"(₹\s?[\d,]+|\b(19|20)\d{2}\b)")
@@ -60,6 +72,9 @@ def validate_article(raw_json_text: str) -> tuple[ValidationResult, dict | None]
     for phrase in BANNED_PHRASES:
         if phrase in lowered:
             errors.append(f"banned phrase found: '{phrase}'")
+    for phrase in LEAKED_REASONING_PHRASES:
+        if phrase in lowered:
+            errors.append(f"leaked model reasoning found in output: '{phrase}'")
 
     fact_sources = article.get("fact_sources", [])
     cited_claims = {fs.get("claim", "").strip().lower() for fs in fact_sources if isinstance(fs, dict)}

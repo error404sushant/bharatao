@@ -1,0 +1,112 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Age Calculator — Find Your Exact Age | BharatAo"
+  description="Calculate your exact age in years, months, and days from your date of birth. Free, instant."
+>
+  <div class="wrap section tool-wrap">
+    <h1 class="tool-title">Age Calculator</h1>
+    <p class="tool-sub">Find your exact age, down to the day.</p>
+
+    <div class="tool-card">
+      <label>
+        Date of birth
+        <input type="date" id="dob" />
+      </label>
+      <label>
+        Calculate age as of
+        <input type="date" id="asof" />
+      </label>
+
+      <div class="tool-result" id="result">
+        <div class="result-stat">
+          <span class="result-label">Years</span>
+          <span class="result-value" id="years">–</span>
+        </div>
+        <div class="result-stat">
+          <span class="result-label">Months</span>
+          <span class="result-value" id="months">–</span>
+        </div>
+        <div class="result-stat">
+          <span class="result-label">Days</span>
+          <span class="result-value" id="days">–</span>
+        </div>
+      </div>
+      <p class="tool-extra" id="totalDays"></p>
+    </div>
+
+    <section class="tool-explainer">
+      <h2>How this is calculated</h2>
+      <p>Age is calculated by comparing your date of birth to the reference
+         date, counting complete years, then complete months in the
+         remainder, then the remaining days. This handles leap years and
+         varying month lengths correctly.</p>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  function calculate() {
+    const dobInput = (document.getElementById("dob") as HTMLInputElement).value;
+    const asofInput = (document.getElementById("asof") as HTMLInputElement).value;
+    if (!dobInput || !asofInput) return;
+
+    const dob = new Date(dobInput + "T00:00:00");
+    const asof = new Date(asofInput + "T00:00:00");
+    if (asof < dob) {
+      document.getElementById("years")!.textContent = "–";
+      document.getElementById("months")!.textContent = "–";
+      document.getElementById("days")!.textContent = "–";
+      document.getElementById("totalDays")!.textContent = "Reference date is before date of birth.";
+      return;
+    }
+
+    let years = asof.getFullYear() - dob.getFullYear();
+    let months = asof.getMonth() - dob.getMonth();
+    let days = asof.getDate() - dob.getDate();
+
+    if (days < 0) {
+      months -= 1;
+      const prevMonth = new Date(asof.getFullYear(), asof.getMonth(), 0);
+      days += prevMonth.getDate();
+    }
+    if (months < 0) {
+      years -= 1;
+      months += 12;
+    }
+
+    document.getElementById("years")!.textContent = String(years);
+    document.getElementById("months")!.textContent = String(months);
+    document.getElementById("days")!.textContent = String(days);
+
+    const totalDays = Math.floor((asof.getTime() - dob.getTime()) / (1000 * 60 * 60 * 24));
+    document.getElementById("totalDays")!.textContent = `That's ${totalDays.toLocaleString("en-IN")} days in total.`;
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  (document.getElementById("asof") as HTMLInputElement).value = today;
+
+  document.getElementById("dob")!.addEventListener("input", calculate);
+  document.getElementById("asof")!.addEventListener("input", calculate);
+</script>
+
+<style>
+  .tool-wrap { max-width: 640px; }
+  .tool-title { font-family: var(--font-display); color: var(--ba-heading); font-size: 2rem; margin: 0 0 4px; }
+  .tool-sub { color: var(--ba-ink-soft); margin: 0 0 var(--sp-4); }
+  .tool-card { background: var(--ba-card); border: 1px solid var(--ba-line); border-radius: var(--radius-card); box-shadow: var(--shadow-card); padding: var(--sp-4); }
+  .tool-card label { display: block; font-size: 0.85rem; color: var(--ba-ink-soft); margin-bottom: var(--sp-2); }
+  .tool-card input {
+    width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--ba-line);
+    border-radius: var(--radius-btn); font-size: 1rem; font-family: inherit;
+  }
+  .tool-result { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--ba-line); }
+  .result-stat { display: flex; flex-direction: column; }
+  .result-label { font-size: 0.75rem; color: var(--ba-ink-soft); }
+  .result-value { font-family: var(--font-display); font-size: 1.3rem; color: var(--ba-saffron); font-weight: 700; }
+  .tool-extra { color: var(--ba-ink-soft); font-size: 0.85rem; margin-top: var(--sp-2); }
+  .tool-explainer { margin-top: var(--sp-6); }
+  .tool-explainer h2 { font-family: var(--font-display); color: var(--ba-heading); font-size: 1.2rem; }
+  @media (max-width: 480px) { .tool-result { grid-template-columns: 1fr; } }
+</style>
