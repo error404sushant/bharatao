@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import ArticleCard from "../components/ArticleCard.astro";
+
+export async function getStaticPaths() {
+  // "tools" has its own static page (src/pages/tools/index.astro) since it
+  // lists calculators, not articles.
+  const PILLARS = ["news", "sarkari", "ghumo", "gyaan", "paisa"];
+  return PILLARS.map((pillar) => ({ params: { pillar } }));
+}
+
+const { pillar } = Astro.params;
+const categoryName = pillar!.charAt(0).toUpperCase() + pillar!.slice(1);
+
+const articles = (await getCollection("articles"))
+  .filter((a) => a.data.category.toLowerCase() === pillar)
+  .sort((a, b) => new Date(b.data.published_at).getTime() - new Date(a.data.published_at).getTime());
+---
+<BaseLayout
+  title={`${categoryName} | BharatAo`}
+  description={`${categoryName} on BharatAo — India-first news and utilities.`}
+>
+  <section class="section">
+    <div class="wrap">
+      <SectionHeader title={categoryName} />
+      {articles.length > 0 ? (
+        <div class="pillars">
+          {articles.map((a) => (
+            <ArticleCard
+              title={a.data.title}
+              slug={a.data.slug}
+              excerpt={a.data.meta_description}
+              category={a.data.category}
+              image={a.data.image}
+              publishedAt={a.data.published_at}
+            />
+          ))}
+        </div>
+      ) : (
+        <p style="color:var(--ba-ink-soft);">Nothing published here yet — check back soon.</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>

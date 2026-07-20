@@ -1,0 +1,21 @@
+---
+interface Props {
+  items?: string[];
+}
+const {
+  items = [
+    "🗞️ India news, every morning",
+    "🏛️ Govt scheme & job alerts",
+    "✈️ Best places to visit this season",
+    "🧮 Free EMI, GST & SIP calculators",
+    "📚 Daily GK & current affairs",
+    "💰 Finance explained simply",
+  ],
+} = Astro.props;
+const looped = [...items, ...items];
+---
+<div class="pulse">
+  <div class="pulse-track">
+    {looped.map((item) => <span>{item}</span>)}
+  </div>
+</div>

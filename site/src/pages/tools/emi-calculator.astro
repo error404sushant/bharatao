@@ -1,0 +1,104 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="EMI Calculator — Free Loan EMI Calculator | BharatAo"
+  description="Calculate your monthly EMI for home, car, or personal loans instantly. Free, accurate, no signup."
+>
+  <div class="wrap section tool-wrap">
+    <h1 class="tool-title">EMI Calculator</h1>
+    <p class="tool-sub">Work out your monthly loan installment in seconds.</p>
+
+    <div class="tool-card">
+      <label>
+        Loan amount (₹)
+        <input type="number" id="principal" value="1000000" min="0" />
+      </label>
+      <label>
+        Interest rate (% per year)
+        <input type="number" id="rate" value="9" min="0" step="0.1" />
+      </label>
+      <label>
+        Tenure (years)
+        <input type="number" id="years" value="20" min="1" />
+      </label>
+
+      <div class="tool-result" id="result">
+        <div class="result-stat">
+          <span class="result-label">Monthly EMI</span>
+          <span class="result-value" id="emi">₹0</span>
+        </div>
+        <div class="result-stat">
+          <span class="result-label">Total Interest</span>
+          <span class="result-value" id="interest">₹0</span>
+        </div>
+        <div class="result-stat">
+          <span class="result-label">Total Payment</span>
+          <span class="result-value" id="total">₹0</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="tool-explainer">
+      <h2>How EMI is calculated</h2>
+      <p>EMI (Equated Monthly Installment) uses the formula
+         <code>EMI = P × r × (1+r)^n / ((1+r)^n − 1)</code>, where P is the
+         loan principal, r is the monthly interest rate, and n is the number
+         of monthly installments. This calculator applies that formula
+         directly in your browser — nothing is sent to a server.</p>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  function fmt(n: number): string {
+    return "₹" + Math.round(n).toLocaleString("en-IN");
+  }
+
+  function calculate() {
+    const principal = parseFloat((document.getElementById("principal") as HTMLInputElement).value) || 0;
+    const annualRate = parseFloat((document.getElementById("rate") as HTMLInputElement).value) || 0;
+    const years = parseFloat((document.getElementById("years") as HTMLInputElement).value) || 0;
+
+    const r = annualRate / 12 / 100;
+    const n = years * 12;
+
+    let emi = 0;
+    if (r === 0 && n > 0) {
+      emi = principal / n;
+    } else if (n > 0) {
+      emi = (principal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    }
+    const total = emi * n;
+    const interest = total - principal;
+
+    document.getElementById("emi")!.textContent = fmt(emi);
+    document.getElementById("interest")!.textContent = fmt(interest);
+    document.getElementById("total")!.textContent = fmt(total);
+  }
+
+  ["principal", "rate", "years"].forEach((id) =>
+    document.getElementById(id)!.addEventListener("input", calculate)
+  );
+  calculate();
+</script>
+
+<style>
+  .tool-wrap { max-width: 640px; }
+  .tool-title { font-family: var(--font-display); color: var(--ba-heading); font-size: 2rem; margin: 0 0 4px; }
+  .tool-sub { color: var(--ba-ink-soft); margin: 0 0 var(--sp-4); }
+  .tool-card { background: var(--ba-card); border: 1px solid var(--ba-line); border-radius: var(--radius-card); box-shadow: var(--shadow-card); padding: var(--sp-4); }
+  .tool-card label { display: block; font-size: 0.85rem; color: var(--ba-ink-soft); margin-bottom: var(--sp-2); }
+  .tool-card input {
+    width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--ba-line);
+    border-radius: var(--radius-btn); font-size: 1rem; font-family: inherit;
+  }
+  .tool-result { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--ba-line); }
+  .result-stat { display: flex; flex-direction: column; }
+  .result-label { font-size: 0.75rem; color: var(--ba-ink-soft); }
+  .result-value { font-family: var(--font-display); font-size: 1.3rem; color: var(--ba-saffron); font-weight: 700; }
+  .tool-explainer { margin-top: var(--sp-6); }
+  .tool-explainer h2 { font-family: var(--font-display); color: var(--ba-heading); font-size: 1.2rem; }
+  .tool-explainer code { background: var(--ba-ivory); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+  @media (max-width: 480px) { .tool-result { grid-template-columns: 1fr; } }
+</style>

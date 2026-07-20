@@ -1,0 +1,89 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const articles = await getCollection("articles");
+  return articles.map((a) => ({
+    params: { slug: a.data.slug },
+    props: { article: a },
+  }));
+}
+
+const { article } = Astro.props;
+const { title, meta_description, html_body, faq, category, image, published_at, tags } = article.data;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faq.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const dateLabel = new Date(published_at).toLocaleDateString("en-IN", {
+  day: "numeric", month: "long", year: "numeric",
+});
+---
+<BaseLayout title={`${title} | BharatAo`} description={meta_description} image={image}>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+  <article class="section">
+    <div class="wrap article-wrap">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a> › <a href={`/${category.toLowerCase()}`}>{category}</a> › <span>{title}</span>
+      </nav>
+
+      <span class="chip article-chip">{category}</span>
+      <h1 class="article-title">{title}</h1>
+      <div class="article-meta">{dateLabel}</div>
+
+      {image && <img class="article-hero" src={image} alt={title} />}
+
+      <div class="article-body" set:html={html_body} />
+
+      {faq.length > 0 && (
+        <section class="faq-section">
+          <h2>FAQ</h2>
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </section>
+      )}
+
+      {tags.length > 0 && (
+        <div class="article-tags">
+          {tags.map((t) => <span class="tag">{t}</span>)}
+        </div>
+      )}
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .article-wrap { max-width: 760px; }
+  .breadcrumb { font-size: 0.8rem; color: var(--ba-ink-soft); margin-bottom: var(--sp-3); }
+  .breadcrumb a { color: var(--ba-peacock); text-decoration: none; }
+  .article-chip {
+    display: inline-block; background: var(--ba-saffron); color: #fff; font-size: 0.75rem;
+    font-weight: 700; padding: 3px 12px; border-radius: var(--radius-pill); margin-bottom: var(--sp-2);
+  }
+  .article-title { font-family: var(--font-display); color: var(--ba-heading); font-size: 2rem; margin: 0 0 8px; line-height: 1.2; }
+  .article-meta { color: var(--ba-ink-soft); font-size: 0.85rem; margin-bottom: var(--sp-3); }
+  .article-hero { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: var(--radius-card); margin-bottom: var(--sp-4); }
+  .article-body { font-size: 1.05rem; line-height: 1.75; }
+  .article-body :global(h2) { font-family: var(--font-display); color: var(--ba-heading); margin-top: var(--sp-4); }
+  .article-body :global(p) { margin: 0 0 var(--sp-2); }
+  .faq-section { margin-top: var(--sp-6); border-top: 1px solid var(--ba-line); padding-top: var(--sp-3); }
+  .faq-section h2 { font-family: var(--font-display); color: var(--ba-heading); }
+  .faq-item { background: var(--ba-card); border: 1px solid var(--ba-line); border-radius: var(--radius-btn); padding: var(--sp-2) var(--sp-3); margin-bottom: var(--sp-1); }
+  .faq-item summary { font-weight: 600; cursor: pointer; color: var(--ba-heading); }
+  .faq-item p { margin: var(--sp-1) 0 0; color: var(--ba-ink-soft); }
+  .article-tags { margin-top: var(--sp-4); display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { background: var(--ba-ivory); border: 1px solid var(--ba-line); color: var(--ba-ink-soft); font-size: 0.75rem; padding: 3px 10px; border-radius: var(--radius-pill); }
+</style>

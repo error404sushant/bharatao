@@ -1,0 +1,104 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="SIP Calculator — Estimate Mutual Fund Returns | BharatAo"
+  description="Calculate the future value of your monthly SIP investment based on expected annual return. Free, instant."
+>
+  <div class="wrap section tool-wrap">
+    <h1 class="tool-title">SIP Calculator</h1>
+    <p class="tool-sub">Estimate what your monthly SIP could grow into over time.</p>
+
+    <div class="tool-card">
+      <label>
+        Monthly investment (₹)
+        <input type="number" id="monthly" value="5000" min="0" />
+      </label>
+      <label>
+        Expected annual return (%)
+        <input type="number" id="rate" value="12" min="0" step="0.1" />
+      </label>
+      <label>
+        Investment period (years)
+        <input type="number" id="years" value="10" min="1" />
+      </label>
+
+      <div class="tool-result" id="result">
+        <div class="result-stat">
+          <span class="result-label">Invested Amount</span>
+          <span class="result-value" id="invested">₹0</span>
+        </div>
+        <div class="result-stat">
+          <span class="result-label">Est. Returns</span>
+          <span class="result-value" id="returns">₹0</span>
+        </div>
+        <div class="result-stat">
+          <span class="result-label">Total Value</span>
+          <span class="result-value" id="total">₹0</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="tool-explainer">
+      <h2>How this is calculated</h2>
+      <p>Uses the standard SIP future-value formula:
+         <code>FV = P × [((1+i)^n − 1) / i] × (1+i)</code>, where P is the
+         monthly investment, i is the monthly rate of return, and n is the
+         number of months. Actual mutual fund returns vary and are not
+         guaranteed — this is an estimate only, not investment advice.</p>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  function fmt(n: number): string {
+    return "₹" + Math.round(n).toLocaleString("en-IN");
+  }
+
+  function calculate() {
+    const monthly = parseFloat((document.getElementById("monthly") as HTMLInputElement).value) || 0;
+    const annualRate = parseFloat((document.getElementById("rate") as HTMLInputElement).value) || 0;
+    const years = parseFloat((document.getElementById("years") as HTMLInputElement).value) || 0;
+
+    const i = annualRate / 12 / 100;
+    const n = years * 12;
+
+    let futureValue = 0;
+    if (i === 0) {
+      futureValue = monthly * n;
+    } else if (n > 0) {
+      futureValue = monthly * ((Math.pow(1 + i, n) - 1) / i) * (1 + i);
+    }
+    const invested = monthly * n;
+    const returns = futureValue - invested;
+
+    document.getElementById("invested")!.textContent = fmt(invested);
+    document.getElementById("returns")!.textContent = fmt(returns);
+    document.getElementById("total")!.textContent = fmt(futureValue);
+  }
+
+  ["monthly", "rate", "years"].forEach((id) =>
+    document.getElementById(id)!.addEventListener("input", calculate)
+  );
+  calculate();
+</script>
+
+<style>
+  .tool-wrap { max-width: 640px; }
+  .tool-title { font-family: var(--font-display); color: var(--ba-heading); font-size: 2rem; margin: 0 0 4px; }
+  .tool-sub { color: var(--ba-ink-soft); margin: 0 0 var(--sp-4); }
+  .tool-card { background: var(--ba-card); border: 1px solid var(--ba-line); border-radius: var(--radius-card); box-shadow: var(--shadow-card); padding: var(--sp-4); }
+  .tool-card label { display: block; font-size: 0.85rem; color: var(--ba-ink-soft); margin-bottom: var(--sp-2); }
+  .tool-card input {
+    width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--ba-line);
+    border-radius: var(--radius-btn); font-size: 1rem; font-family: inherit;
+  }
+  .tool-result { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--ba-line); }
+  .result-stat { display: flex; flex-direction: column; }
+  .result-label { font-size: 0.75rem; color: var(--ba-ink-soft); }
+  .result-value { font-family: var(--font-display); font-size: 1.3rem; color: var(--ba-saffron); font-weight: 700; }
+  .tool-explainer { margin-top: var(--sp-6); }
+  .tool-explainer h2 { font-family: var(--font-display); color: var(--ba-heading); font-size: 1.2rem; }
+  .tool-explainer code { background: var(--ba-ivory); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+  @media (max-width: 480px) { .tool-result { grid-template-columns: 1fr; } }
+</style>

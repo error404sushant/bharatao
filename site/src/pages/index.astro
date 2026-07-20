@@ -1,0 +1,90 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import ArticleCard from "../components/ArticleCard.astro";
+
+const articles = (await getCollection("articles")).sort(
+  (a, b) => new Date(b.data.published_at).getTime() - new Date(a.data.published_at).getTime()
+);
+
+const pillars = [
+  { name: "News", icon: "🗞️", accent: "#E8590C", desc: "Top India stories, written fresh every morning." },
+  { name: "Sarkari", icon: "🏛️", accent: "#1E2A4A", desc: "Govt schemes, jobs, results and deadlines that matter." },
+  { name: "Ghumo", icon: "✈️", accent: "#0F766E", desc: "Season-aware travel guides and most-recommended places." },
+  { name: "Tools", icon: "🧮", accent: "#C9962E", desc: "Free calculators — EMI, GST, SIP, tax, and more." },
+  { name: "Gyaan", icon: "📚", accent: "#1E2A4A", desc: "Daily GK, current affairs and exam prep, made simple." },
+  { name: "Paisa", icon: "💰", accent: "#0F766E", desc: "Savings, tax and personal finance explained plainly." },
+];
+---
+<BaseLayout
+  title="BharatAo — Come to India. Bring India to you."
+  description="News, Sarkari updates, travel guides, free tools and finance explainers for India — all in one place."
+>
+  <header class="hero">
+    <div class="wrap">
+      <span class="kicker">{articles.length > 0 ? "Fresh Today" : "Launching Soon"}</span>
+      <h1>Come to India.<br>Bring India to you.</h1>
+      <p class="sub">One place for the news, government updates, travel ideas, free tools,
+         and money know-how millions of Indians check every single morning.</p>
+    </div>
+  </header>
+
+  {articles.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <SectionHeader title="Latest" />
+        <div class="pillars">
+          {articles.map((a) => (
+            <ArticleCard
+              title={a.data.title}
+              slug={a.data.slug}
+              excerpt={a.data.meta_description}
+              category={a.data.category}
+              image={a.data.image}
+              publishedAt={a.data.published_at}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section" id="pillars">
+    <div class="wrap">
+      <SectionHeader title="What's coming" />
+      <div class="pillars">
+        {pillars.map((p) => (
+          <div class="pillar-card">
+            <span class="chip" style={`background:${p.accent}`}>{p.icon}</span>
+            <h3>{p.name}</h3>
+            <p>{p.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="trust">
+    <div class="wrap section">
+      <SectionHeader title="Built differently" />
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="num">AI</div>
+          <h3>AI-assisted writing</h3>
+          <p>Every article is drafted from real sources — dates and figures always cite where they came from.</p>
+        </div>
+        <div class="trust-item">
+          <div class="num">👤</div>
+          <h3>Human-approved</h3>
+          <p>News and government updates are reviewed by a person before anything goes live.</p>
+        </div>
+        <div class="trust-item">
+          <div class="num">☀️</div>
+          <h3>Fresh every morning</h3>
+          <p>Built to be part of your daily routine, the way you check WhatsApp.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

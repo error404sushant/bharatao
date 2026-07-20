@@ -1,0 +1,110 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="GST Calculator — Add or Remove GST Instantly | BharatAo"
+  description="Calculate GST amount and final price instantly for any GST slab (5%, 12%, 18%, 28%). Free, no signup."
+>
+  <div class="wrap section tool-wrap">
+    <h1 class="tool-title">GST Calculator</h1>
+    <p class="tool-sub">Add GST to a price, or find the base price from a GST-inclusive amount.</p>
+
+    <div class="tool-card">
+      <label>
+        Amount (₹)
+        <input type="number" id="amount" value="1000" min="0" />
+      </label>
+      <label>
+        GST rate (%)
+        <select id="rate">
+          <option value="5">5%</option>
+          <option value="12">12%</option>
+          <option value="18" selected>18%</option>
+          <option value="28">28%</option>
+        </select>
+      </label>
+      <label>
+        <input type="radio" name="mode" value="add" checked /> Add GST (amount is base price)
+      </label>
+      <label>
+        <input type="radio" name="mode" value="remove" /> Remove GST (amount already includes GST)
+      </label>
+
+      <div class="tool-result" id="result">
+        <div class="result-stat">
+          <span class="result-label">Base Price</span>
+          <span class="result-value" id="base">₹0</span>
+        </div>
+        <div class="result-stat">
+          <span class="result-label">GST Amount</span>
+          <span class="result-value" id="gst">₹0</span>
+        </div>
+        <div class="result-stat">
+          <span class="result-label">Final Price</span>
+          <span class="result-value" id="final">₹0</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="tool-explainer">
+      <h2>How this is calculated</h2>
+      <p><strong>Adding GST:</strong> <code>GST amount = base price × rate / 100</code>,
+         final price = base price + GST amount.</p>
+      <p><strong>Removing GST:</strong> <code>base price = amount / (1 + rate/100)</code>,
+         GST amount = amount − base price.</p>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  function fmt(n: number): string {
+    return "₹" + Math.round(n * 100 / 100).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+  }
+
+  function calculate() {
+    const amount = parseFloat((document.getElementById("amount") as HTMLInputElement).value) || 0;
+    const rate = parseFloat((document.getElementById("rate") as HTMLSelectElement).value) || 0;
+    const mode = (document.querySelector('input[name="mode"]:checked') as HTMLInputElement).value;
+
+    let base: number, gst: number, final: number;
+    if (mode === "add") {
+      base = amount;
+      gst = (base * rate) / 100;
+      final = base + gst;
+    } else {
+      final = amount;
+      base = amount / (1 + rate / 100);
+      gst = final - base;
+    }
+
+    document.getElementById("base")!.textContent = fmt(base);
+    document.getElementById("gst")!.textContent = fmt(gst);
+    document.getElementById("final")!.textContent = fmt(final);
+  }
+
+  document.getElementById("amount")!.addEventListener("input", calculate);
+  document.getElementById("rate")!.addEventListener("change", calculate);
+  document.querySelectorAll('input[name="mode"]').forEach((el) => el.addEventListener("change", calculate));
+  calculate();
+</script>
+
+<style>
+  .tool-wrap { max-width: 640px; }
+  .tool-title { font-family: var(--font-display); color: var(--ba-heading); font-size: 2rem; margin: 0 0 4px; }
+  .tool-sub { color: var(--ba-ink-soft); margin: 0 0 var(--sp-4); }
+  .tool-card { background: var(--ba-card); border: 1px solid var(--ba-line); border-radius: var(--radius-card); box-shadow: var(--shadow-card); padding: var(--sp-4); }
+  .tool-card label { display: block; font-size: 0.85rem; color: var(--ba-ink-soft); margin-bottom: var(--sp-2); }
+  .tool-card input[type="number"], .tool-card select {
+    width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--ba-line);
+    border-radius: var(--radius-btn); font-size: 1rem; font-family: inherit;
+  }
+  .tool-card input[type="radio"] { margin-right: 6px; width: auto; }
+  .tool-result { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--ba-line); }
+  .result-stat { display: flex; flex-direction: column; }
+  .result-label { font-size: 0.75rem; color: var(--ba-ink-soft); }
+  .result-value { font-family: var(--font-display); font-size: 1.3rem; color: var(--ba-saffron); font-weight: 700; }
+  .tool-explainer { margin-top: var(--sp-6); }
+  .tool-explainer h2 { font-family: var(--font-display); color: var(--ba-heading); font-size: 1.2rem; }
+  .tool-explainer code { background: var(--ba-ivory); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+  @media (max-width: 480px) { .tool-result { grid-template-columns: 1fr; } }
+</style>

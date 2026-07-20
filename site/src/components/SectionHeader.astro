@@ -1,0 +1,11 @@
+---
+interface Props {
+  title: string;
+  href?: string;
+}
+const { title, href } = Astro.props;
+---
+<div class="section-header">
+  <h2>{title}</h2>
+  {href && <a href={href}>View all →</a>}
+</div>

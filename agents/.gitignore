@@ -1,0 +1,10 @@
+.env
+*.db
+__pycache__/
+*.pyc
+.venv/
+data/drafts/*.json
+data/drafts/*.html
+data/drafts/*.png
+data/drafts/preview/
+!data/drafts/.gitkeep

@@ -1,0 +1,11 @@
+---
+const pillars = ["News", "Sarkari", "Ghumo", "Tools", "Gyaan", "Paisa"];
+---
+<nav class="navbar">
+  <div class="wrap">
+    <a class="brand" href="/">🇮🇳 BharatAo</a>
+    <ul class="navlinks">
+      {pillars.map((p) => <li><a href={`/${p.toLowerCase()}`}>{p}</a></li>)}
+    </ul>
+  </div>
+</nav>

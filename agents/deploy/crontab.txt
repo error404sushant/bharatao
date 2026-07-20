@@ -1,0 +1,21 @@
+# BharatAo agent VPS crontab -- Phase 1 schedule (master plan section 5.1, IST).
+#
+# NOT auto-installed. To deploy on the production VPS:
+#   crontab agents/deploy/crontab.txt
+# (adjust the path below to wherever this repo lives on the server, and make
+# sure the server's timezone is IST, or prefix each line with TZ=Asia/Kolkata)
+#
+# Only A1 / A2 / A9 exist in Phase 1. A3/A4/A5/A6/A7/A10/A11 join in Phase 2.
+
+TZ=Asia/Kolkata
+
+# A1 Trend Scout -- 05:30 daily -- fills topic_queue, writes nothing
+30 5 * * * cd /opt/bharatao/agents && .venv/bin/python a1_trend_scout.py >> logs/a1.log 2>&1
+
+# A2 News Writer -- 06:00 daily -- drafts top pending topics, ALWAYS as draft
+0 6 * * * cd /opt/bharatao/agents && .venv/bin/python a2_news_writer.py >> logs/a2.log 2>&1
+
+# A9 Publisher -- 08:30 daily -- AFTER the 08:00 human review window.
+# Lists drafts pending review; only ever flips to publish what a human already
+# approved (master plan section 5.4) -- never auto-publishes on its own.
+30 8 * * * cd /opt/bharatao/agents && .venv/bin/python a9_publisher.py --list >> logs/a9.log 2>&1

@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+
+const tools = [
+  { name: "EMI Calculator", href: "/tools/emi-calculator", icon: "🏠", desc: "Monthly loan installment for home, car, or personal loans." },
+  { name: "GST Calculator", href: "/tools/gst-calculator", icon: "🧾", desc: "Add or remove GST from any amount, any slab." },
+  { name: "SIP Calculator", href: "/tools/sip-calculator", icon: "📈", desc: "Estimate mutual fund SIP returns over time." },
+];
+---
+<BaseLayout
+  title="Free Financial Tools & Calculators | BharatAo"
+  description="Free EMI, GST, and SIP calculators — accurate, instant, no signup required."
+>
+  <section class="section">
+    <div class="wrap">
+      <SectionHeader title="Tools" />
+      <div class="pillars">
+        {tools.map((t) => (
+          <a class="pillar-card" href={t.href} style="text-decoration:none;color:inherit;display:block;">
+            <span class="chip" style="background:#C9962E;">{t.icon}</span>
+            <h3>{t.name}</h3>
+            <p>{t.desc}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
