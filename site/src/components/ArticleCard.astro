@@ -24,7 +24,7 @@ const dateLabel = new Date(publishedAt).toLocaleDateString("en-IN", {
   year: "numeric",
 });
 ---
-<a class="article-card" href={`/news/${slug}`}>
+<a class="article-card" href={`/${category.toLowerCase()}/${slug}`}>
   {image && <img src={image} alt={title} loading="lazy" />}
   <div class="article-card-body">
     <span class="chip" style={`background:${accent}`}>{category}</span>
