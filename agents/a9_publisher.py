@@ -66,6 +66,15 @@ def publish_to_site(slug: str) -> None:
     )
     log.info("Published to site content collection: %s", slug)
 
+    # Remove from the review queue -- otherwise data/drafts/ (and preview.py's
+    # queue view) would show this as "pending review" forever, even though
+    # it's already live. The site's content collection is now the permanent
+    # copy; nothing else reads from data/drafts/.
+    draft_path.unlink()
+    if image_src.exists():
+        image_src.unlink()
+    log.info("Removed from review queue (now live): %s", slug)
+
 
 def run_list() -> None:
     started_at = datetime.now(timezone.utc).isoformat()
