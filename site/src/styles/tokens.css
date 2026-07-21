@@ -160,9 +160,14 @@ footer .domain-note { color: #7c88a8; font-size: 0.78rem; }
     --ba-heading: #EDE9DD;
     --ba-ink-soft: #9aa1b8;
     --ba-line: #2a2d40;
+    /* Overriding the token itself (not just individual components) so every
+       card everywhere -- present and future -- gets a dark surface automatically.
+       Missing this is exactly what caused light heading text on a still-light
+       card background (unreadable article-card titles) on the live site. */
+    --ba-card: #1c1e2b;
   }
   body { background: #14151f; color: #ECE9E2; }
-  .pillar-card { background: #1c1e2b; border-color: var(--ba-line); }
-  .trust { background: #1c1e2b; border-color: var(--ba-line); }
-  .notify-form input { background: #1c1e2b; border-color: var(--ba-line); color: #ECE9E2; }
+  .pillar-card { border-color: var(--ba-line); }
+  .trust { background: var(--ba-card); border-color: var(--ba-line); }
+  .notify-form input { background: var(--ba-card); border-color: var(--ba-line); color: #ECE9E2; }
 }
